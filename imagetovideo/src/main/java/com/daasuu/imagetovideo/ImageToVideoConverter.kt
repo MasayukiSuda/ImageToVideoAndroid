@@ -3,7 +3,7 @@ package com.daasuu.imagetovideo
 import android.util.Size
 import java.util.concurrent.TimeUnit
 
-class ImageToVideoCreator(
+class ImageToVideoConverter(
   outputPath: String,
   inputImagePath: String,
   private val listener: EncodeListener? = null,

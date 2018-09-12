@@ -16,7 +16,7 @@ import android.widget.ListView
 import android.widget.ProgressBar
 import android.widget.Toast
 import com.daasuu.imagetovideo.EncodeListener
-import com.daasuu.imagetovideo.ImageToVideoCreator
+import com.daasuu.imagetovideo.ImageToVideoConverter
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
@@ -40,7 +40,7 @@ class MainActivity : AppCompatActivity() {
       imagePath?.let {
         view.isEnabled = false
         val outputPath = getVideoFilePath()
-        val imageToVideo = ImageToVideoCreator(outputPath = outputPath, inputImagePath = it, listener = object : EncodeListener {
+        val imageToVideo = ImageToVideoConverter(outputPath = outputPath, inputImagePath = it, listener = object : EncodeListener {
           override fun onProgress(progress: Float) {
             Log.d("progress", "progress = " + progress)
             progressBar.progress = (progress * 100).toInt()
