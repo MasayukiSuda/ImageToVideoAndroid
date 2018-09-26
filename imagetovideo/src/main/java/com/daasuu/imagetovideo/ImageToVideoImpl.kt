@@ -120,6 +120,7 @@ internal class ImageToVideoImpl(
 
   fun stop() {
     mainHandler.post {
+      finishEncode()
       glThread?.requestExitAndWait()
       release()
       completeListener()
@@ -134,12 +135,21 @@ internal class ImageToVideoImpl(
   }
 
   fun finishEncode() {
-    mediaCodec.signalEndOfInputStream()
+    try {
+      mediaCodec.signalEndOfInputStream()
+    } catch (e: Exception) {
+      e.printStackTrace()
+    }
+
   }
 
   fun release() {
-    mediaCodec.stop()
-    mediaCodec.release()
+    try {
+      mediaCodec.stop()
+      mediaCodec.release()
+    } catch (e: Exception) {
+      e.printStackTrace()
+    }
     muxer.stop()
     muxer.release()
   }
