@@ -37,12 +37,13 @@ internal class ImageToVideoImpl(
 
   init {
 
-    val format = MediaFormat.createVideoFormat("video/avc", size.width, size.height).apply {
-      setInteger(MediaFormat.KEY_COLOR_FORMAT, MediaCodecInfo.CodecCapabilities.COLOR_FormatSurface)
-      setInteger(MediaFormat.KEY_BIT_RATE, calcBitRate(size.width, size.height))
-      setInteger(MediaFormat.KEY_FRAME_RATE, FPS)
-      setInteger(MediaFormat.KEY_I_FRAME_INTERVAL, 1)
-    }
+    val format = MediaFormat.createVideoFormat("video/avc", size.width, size.height)
+      .apply {
+        setInteger(MediaFormat.KEY_COLOR_FORMAT, MediaCodecInfo.CodecCapabilities.COLOR_FormatSurface)
+        setInteger(MediaFormat.KEY_BIT_RATE, calcBitRate(size.width, size.height))
+        setInteger(MediaFormat.KEY_FRAME_RATE, FPS)
+        setInteger(MediaFormat.KEY_I_FRAME_INTERVAL, 1)
+      }
 
     mediaCodec.setCallback(object : MediaCodec.Callback() {
       override fun onOutputBufferAvailable(codec: MediaCodec?, index: Int, info: MediaCodec.BufferInfo?) {
@@ -110,8 +111,8 @@ internal class ImageToVideoImpl(
         }
       }
     })
-    mediaCodec.configure(format, null, null, MediaCodec.CONFIGURE_FLAG_ENCODE)
     mainHandler.post {
+      mediaCodec.configure(format, null, null, MediaCodec.CONFIGURE_FLAG_ENCODE)
       glThread = GLThread(mediaCodec.createInputSurface(), drawer, size)
     }
 
@@ -119,7 +120,6 @@ internal class ImageToVideoImpl(
 
   fun stop() {
     mainHandler.post {
-      finishEncode()
       glThread?.requestExitAndWait()
       release()
       completeListener()
