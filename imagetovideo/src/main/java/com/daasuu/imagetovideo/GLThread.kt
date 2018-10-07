@@ -9,7 +9,8 @@ import android.view.Surface
 internal class GLThread(
   private val surface: Surface,
   private val glImageOverlay: GLImageOverlay,
-  private val size: Size
+  private val size: Size,
+  private val onDrawListener: () -> Unit
 ) : Thread() {
 
   companion object {
@@ -43,6 +44,7 @@ internal class GLThread(
 
     while (!threadFinish) {
       drawImage()
+      onDrawListener()
     }
     release()
   }

@@ -7,23 +7,25 @@ class ImageToVideoConverter(
   outputPath: String,
   inputImagePath: String,
   private val listener: EncodeListener? = null,
-  size: Size = Size(720, 720),
+  private val size: Size = Size(720, 720),
   duration: Long = TimeUnit.SECONDS.toMicros(4)
 ) {
 
-  private val imageToVideoImpl: ImageToVideoImpl
 
   private var imageCreateFinish = false
   private var startCall = false
 
-  init {
-    val drawer = GLImageOverlay(inputImagePath, size) {
-      imageCreateFinish = true
-      startAction()
-    }
 
-    imageToVideoImpl = ImageToVideoImpl(outputPath, size, duration, listener, drawer) {
-      listener?.onCompleted()
+  private var glThread: GLThread? = null
+  private var muxer: MediaMuxerCaptureWrapper? = null
+  private val drawer = GLImageOverlay(inputImagePath, size) {
+    imageCreateFinish = true
+    startAction()
+  }
+
+  init {
+    muxer = MediaMuxerCaptureWrapper(outputPath, duration, listener) {
+      stop()
     }
   }
 
@@ -34,12 +36,29 @@ class ImageToVideoConverter(
 
   private fun startAction() {
     if (startCall && imageCreateFinish) {
-      imageToVideoImpl.encode()
+      //imageToVideoImpl.startEncode()
+      try {
+        val encoder = MediaVideoEncoder(size, muxer, null)
+        muxer?.prepare()
+        glThread = GLThread(encoder.surface!!, drawer, size) {
+          encoder.frameAvailableSoon()
+        }
+        glThread?.start()
+        muxer?.startRecording()
+      } catch (e: Exception) {
+        e.printStackTrace()
+      }
     }
   }
 
   fun stop() {
-    imageToVideoImpl.stop()
+    muxer?.stopRecording()
+    muxer = null
+
+    glThread?.requestExitAndWait()
+    glThread = null
+    listener?.onCompleted()
+
   }
 
 }
