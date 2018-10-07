@@ -1,6 +1,7 @@
 package com.daasuu.imagetovideoandroid
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
@@ -29,6 +30,7 @@ class MainActivity : AppCompatActivity() {
 
   private var imageLoader: ImageLoader? = null
   private var imagePath: String? = null
+  private var imageToVideo: ImageToVideoConverter? = null
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
@@ -40,15 +42,19 @@ class MainActivity : AppCompatActivity() {
       imagePath?.let {
         view.isEnabled = false
         val outputPath = getVideoFilePath()
-        val imageToVideo = ImageToVideoConverter(outputPath = outputPath, inputImagePath = it, listener = object : EncodeListener {
+        imageToVideo = ImageToVideoConverter(outputPath = outputPath, inputImagePath = it, listener = object : EncodeListener {
           override fun onProgress(progress: Float) {
-            Log.d("progress", "progress = " + progress)
-            progressBar.progress = (progress * 100).toInt()
+            Log.d("progress", "progress = $progress")
+            runOnUiThread {
+              progressBar.progress = (progress * 100).toInt()
+            }
           }
 
           override fun onCompleted() {
-            view.isEnabled = true
-            progressBar.progress = 100
+            runOnUiThread {
+              view.isEnabled = true
+              progressBar.progress = 100
+            }
             exportMp4ToGallery(applicationContext, outputPath)
           }
 
@@ -56,11 +62,16 @@ class MainActivity : AppCompatActivity() {
 
           }
         })
-        imageToVideo.start()
+        imageToVideo?.start()
       }
 
 
     }
+
+    findViewById<Button>(R.id.stop_button).setOnClickListener {
+      imageToVideo?.stop()
+    }
+
   }
 
   override fun onResume() {
@@ -93,6 +104,7 @@ class MainActivity : AppCompatActivity() {
   }
 
 
+  @SuppressLint("NewApi")
   private fun checkPermission(): Boolean {
     // request permission if it has not been grunted.
     if (checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
