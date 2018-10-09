@@ -1,7 +1,7 @@
 # ImageToVideoAndroid
 [![Platform](https://img.shields.io/badge/platform-android-green.svg)](http://developer.android.com/index.html)
 <img src="https://img.shields.io/badge/license-MIT-green.svg?style=flat">
-[![API](https://img.shields.io/badge/API-23%2B-brightgreen.svg?style=flat)](https://android-arsenal.com/api?level=23)
+[![API](https://img.shields.io/badge/API-21%2B-brightgreen.svg?style=flat)](https://android-arsenal.com/api?level=21)
 <br>
 Easy Image to Video Converter
 
@@ -18,7 +18,7 @@ allprojects {
 Step 2. Add the dependency
 ```groovy
 dependencies {
-        implementation 'com.github.MasayukiSuda:ImageToVideoAndroid:v0.0.2'
+        implementation 'com.github.MasayukiSuda:ImageToVideoAndroid:v0.0.4'
 }
 ```
 
