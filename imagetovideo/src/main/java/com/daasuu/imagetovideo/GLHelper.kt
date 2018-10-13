@@ -46,12 +46,41 @@ internal object GLHelper {
     }
   }
 
-  const val DEFAULT_VERTEX_SHADER = "uniform mat4 uMVPMatrix;\n" + "uniform mat4 uSTMatrix;\n" + "attribute vec4 aPosition;\n" + "attribute vec4 aTextureCoord;\n" + "varying vec2 vTextureCoord;\n" + "void main() {\n" + "  gl_Position = uMVPMatrix * aPosition;\n" + "  vTextureCoord = (uSTMatrix * aTextureCoord).xy;\n" + "}\n"
+  const val DEFAULT_VERTEX_SHADER =
+    "uniform mat4 uMVPMatrix;\n" +
+      "uniform mat4 uSTMatrix;\n" +
+      "attribute vec4 aPosition;\n" +
+      "attribute vec4 aTextureCoord;\n" +
+      "varying vec2 vTextureCoord;\n" +
+      "void main() {\n" +
+      "  gl_Position = uMVPMatrix * aPosition;\n" +
+      "  vTextureCoord = (uSTMatrix * aTextureCoord).xy;\n" +
+      "}\n"
 
-  const val DEFAULT_FRAGMENT_SHADER = ("#extension GL_OES_EGL_image_external : require\n" + "precision mediump float;\n" +      // highp here doesn't seem to matter
+  const val DEFAULT_FRAGMENT_SHADER =
+    "#extension GL_OES_EGL_image_external : require\n" +
+      "precision mediump float;\n" +      // highp here doesn't seem to matter
+      "varying vec2 vTextureCoord;\n" +
+      "uniform samplerExternalOES sTexture;\n" +
+      "void main() {\n" +
+      "  gl_FragColor = texture2D(sTexture, vTextureCoord);\n" +
+      "}\n"
 
-    "varying vec2 vTextureCoord;\n" + "uniform samplerExternalOES sTexture;\n" + "void main() {\n" + "  gl_FragColor = texture2D(sTexture, vTextureCoord);\n" + "}\n")
-
-  const val OVERLAY_FRAGMENT_SHADER = "#extension GL_OES_EGL_image_external : require\n" + "precision mediump float;\n" + "varying vec2 vTextureCoord;\n" + "uniform samplerExternalOES sTexture;\n" + "uniform lowp sampler2D oTexture;\n" + "void main() {\n" + "     lowp vec4 c2 = texture2D(sTexture, vTextureCoord);\n" + "     lowp vec4 c1 = texture2D(oTexture, vTextureCoord);\n" + "     \n" + "     lowp vec4 outputColor;\n" + "     \n" + "     outputColor.r = c1.r + c2.r * c2.a * (1.0 - c1.a);\n" + "\n" + "     outputColor.g = c1.g + c2.g * c2.a * (1.0 - c1.a);\n" + "     \n" + "     outputColor.b = c1.b + c2.b * c2.a * (1.0 - c1.a);\n" + "     \n" + "     outputColor.a = c1.a + c2.a * (1.0 - c1.a);\n" + "     \n" + "     gl_FragColor = outputColor;\n" + "}\n"
+  const val OVERLAY_FRAGMENT_SHADER =
+    "#extension GL_OES_EGL_image_external : require\n" +
+      "precision mediump float;\n" +
+      "varying vec2 vTextureCoord;\n" +
+      "uniform samplerExternalOES sTexture;\n" +
+      "uniform lowp sampler2D oTexture;\n" +
+      "void main() {\n" +
+      "     lowp vec4 c2 = texture2D(sTexture, vTextureCoord);\n" +
+      "     lowp vec4 c1 = texture2D(oTexture, vTextureCoord);\n" +
+      "     lowp vec4 outputColor;\n" +
+      "     outputColor.r = c1.r + c2.r * c2.a * (1.0 - c1.a);\n" +
+      "     outputColor.g = c1.g + c2.g * c2.a * (1.0 - c1.a);\n" +
+      "     outputColor.b = c1.b + c2.b * c2.a * (1.0 - c1.a);\n" +
+      "     outputColor.a = c1.a + c2.a * (1.0 - c1.a);\n" +
+      "     gl_FragColor = outputColor;\n" +
+      "}\n"
 
 }

@@ -38,9 +38,9 @@ class ImageToVideoConverter(
     if (startCall && imageCreateFinish) {
       //imageToVideoImpl.startEncode()
       try {
-        val encoder = MediaVideoEncoder(size, muxer, null)
+        val encoder = VideoEncoder(size, muxer) { listener?.onCompleted() }
         muxer?.prepare()
-        glThread = GLThread(encoder.surface!!, drawer, size) {
+        glThread = GLThread(encoder.surface, drawer, size) {
           encoder.frameAvailableSoon()
         }
         glThread?.start()
@@ -57,7 +57,6 @@ class ImageToVideoConverter(
 
     glThread?.requestExitAndWait()
     glThread = null
-    listener?.onCompleted()
 
   }
 

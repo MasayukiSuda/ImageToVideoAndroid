@@ -128,12 +128,10 @@ internal class GLImageOverlay(
       return matrix
     }
 
-    // 画像の向きを取得
     val exifOrientation = exifInterface.getAttributeInt(
       ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_UNDEFINED
     )
 
-    // 画像を回転させる処理をマトリクスに追加
     when (exifOrientation) {
       ExifInterface.ORIENTATION_FLIP_HORIZONTAL -> matrix.setScale(-1f, 1f)
       ExifInterface.ORIENTATION_ROTATE_180 -> matrix.setRotate(180f)
