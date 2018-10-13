@@ -7,11 +7,11 @@ import android.util.Log
 import java.io.IOException
 import java.nio.ByteBuffer
 
-class MediaMuxerCaptureWrapper @Throws(IOException::class)
+internal class MediaMuxerCaptureWrapper @Throws(IOException::class)
 constructor(filePath: String,
             private val duration: Long,
             private val listener: EncodeListener?,
-            private val completeListener: () -> Unit
+            private val overDurationListener: () -> Unit
 ) {
 
   companion object {
@@ -26,7 +26,7 @@ constructor(filePath: String,
   @get:Synchronized
   var isStarted: Boolean = false
     private set
-  private var videoEncoder: MediaEncoder? = null
+  private var videoEncoder: VideoEncoder? = null
   private var preventAudioPresentationTimeUs: Long = -1
 
   init {
@@ -58,7 +58,7 @@ constructor(filePath: String,
    *
    * @param encoder instance of MediaVideoEncoder or MediaAudioEncoder
    */
-  internal fun addEncoder(encoder: MediaEncoder) {
+  internal fun addEncoder(encoder: VideoEncoder) {
     encoderCount = 1
     videoEncoder = encoder
   }
@@ -141,7 +141,7 @@ constructor(filePath: String,
       val progress = preventAudioPresentationTimeUs - startTimeUs
       listener?.onProgress(progress / duration.toFloat())
       if (duration <= progress) {
-        completeListener()
+        overDurationListener()
       }
     }
 
