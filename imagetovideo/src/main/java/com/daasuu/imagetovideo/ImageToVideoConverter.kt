@@ -46,7 +46,7 @@ class ImageToVideoConverter(
         glThread?.start()
         muxer?.startRecording()
       } catch (e: Exception) {
-        e.printStackTrace()
+        listener?.onFailed(e)
       }
     }
   }
