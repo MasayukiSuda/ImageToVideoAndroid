@@ -30,6 +30,7 @@ class MainActivity : AppCompatActivity() {
 
   private var imageLoader: ImageLoader? = null
   private var imagePath: String? = null
+  private var videoPath: String? = null
   private var imageToVideo: ImageToVideoConverter? = null
 
   override fun onCreate(savedInstanceState: Bundle?) {
@@ -41,35 +42,45 @@ class MainActivity : AppCompatActivity() {
     findViewById<Button>(R.id.button).setOnClickListener { view ->
       imagePath?.let {
         view.isEnabled = false
-        val outputPath = getVideoFilePath()
-        imageToVideo = ImageToVideoConverter(outputPath = outputPath, inputImagePath = it, listener = object : EncodeListener {
-          override fun onProgress(progress: Float) {
-            Log.d("progress", "progress = $progress")
-            runOnUiThread {
-              progressBar.progress = (progress * 100).toInt()
-            }
-          }
+        videoPath = getVideoFilePath()
+        videoPath?.let { outputPath ->
+          imageToVideo = ImageToVideoConverter(
+            outputPath = outputPath,
+            inputImagePath = it,
+            listener = object : EncodeListener {
+              override fun onProgress(progress: Float) {
+                Log.d("progress", "progress = $progress")
+                runOnUiThread {
+                  progressBar.progress = (progress * 100).toInt()
+                }
+              }
 
-          override fun onCompleted() {
-            runOnUiThread {
-              view.isEnabled = true
-              progressBar.progress = 100
-            }
-            exportMp4ToGallery(applicationContext, outputPath)
-          }
+              override fun onCompleted() {
+                runOnUiThread {
+                  view.isEnabled = true
+                  progressBar.progress = 100
+                  findViewById<Button>(R.id.play).isEnabled = true
+                }
+                exportMp4ToGallery(applicationContext, outputPath)
+              }
 
-          override fun onFailed(exception: Exception) {
+              override fun onFailed(exception: Exception) {
 
-          }
-        })
-        imageToVideo?.start()
+              }
+            })
+          imageToVideo?.start()
+          findViewById<Button>(R.id.play).isEnabled = false
+        }
       }
-
-
     }
 
-    findViewById<Button>(R.id.stop_button).setOnClickListener {
-      imageToVideo?.stop()
+    findViewById<Button>(R.id.play).setOnClickListener {
+      videoPath?.let { path ->
+        val uri = Uri.parse(path)
+        val intent = Intent(Intent.ACTION_VIEW, uri)
+        intent.setDataAndType(uri, "video/mp4")
+        startActivity(intent)
+      }
     }
 
   }
@@ -117,9 +128,11 @@ class MainActivity : AppCompatActivity() {
   override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
     when (requestCode) {
       PERMISSION_REQUEST_CODE -> if (grantResults.size > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-        Toast.makeText(this@MainActivity, "permission has been grunted.", Toast.LENGTH_SHORT).show()
+        Toast.makeText(this@MainActivity, "permission has been grunted.", Toast.LENGTH_SHORT)
+          .show()
       } else {
-        Toast.makeText(this@MainActivity, "[WARN] permission is not grunted.", Toast.LENGTH_SHORT).show()
+        Toast.makeText(this@MainActivity, "[WARN] permission is not grunted.", Toast.LENGTH_SHORT)
+          .show()
       }
     }
   }
