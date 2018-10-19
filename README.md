@@ -5,6 +5,8 @@
 <br>
 Easy Image to Video Converter
 
+<img src="art/output.gif" width="25%">
+
 ## Gradle
 Step 1. Add the JitPack repository to your build file
 ```groovy
