@@ -12,6 +12,7 @@ import android.os.Environment
 import android.provider.MediaStore
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
+import android.util.Size
 import android.widget.Button
 import android.widget.ListView
 import android.widget.ProgressBar
@@ -21,6 +22,7 @@ import com.daasuu.imagetovideo.ImageToVideoConverter
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
+import java.util.concurrent.TimeUnit
 
 class MainActivity : AppCompatActivity() {
 
@@ -45,29 +47,33 @@ class MainActivity : AppCompatActivity() {
         videoPath = getVideoFilePath()
         videoPath?.let { outputPath ->
           imageToVideo = ImageToVideoConverter(
-            outputPath = outputPath,
-            inputImagePath = it,
-            listener = object : EncodeListener {
-              override fun onProgress(progress: Float) {
-                Log.d("progress", "progress = $progress")
-                runOnUiThread {
-                  progressBar.progress = (progress * 100).toInt()
+              outputPath = outputPath,
+              inputImagePath = it,
+              size = Size(720, 720),
+              duration = TimeUnit.SECONDS.toMicros(4),
+              listener = object : EncodeListener {
+                override fun onProgress(progress: Float) {
+                  Log.d("progress", "progress = $progress")
+                  runOnUiThread {
+                    progressBar.progress = (progress * 100).toInt()
+                  }
+                }
+
+                override fun onCompleted() {
+                  runOnUiThread {
+                    view.isEnabled = true
+                    progressBar.progress = 100
+                    findViewById<Button>(R.id.play).isEnabled = true
+                  }
+                  exportMp4ToGallery(applicationContext, outputPath)
+                }
+
+                override fun onFailed(exception: Exception) {
+
                 }
               }
 
-              override fun onCompleted() {
-                runOnUiThread {
-                  view.isEnabled = true
-                  progressBar.progress = 100
-                  findViewById<Button>(R.id.play).isEnabled = true
-                }
-                exportMp4ToGallery(applicationContext, outputPath)
-              }
-
-              override fun onFailed(exception: Exception) {
-
-              }
-            })
+            )
           imageToVideo?.start()
           findViewById<Button>(R.id.play).isEnabled = false
         }

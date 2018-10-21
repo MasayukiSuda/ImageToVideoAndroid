@@ -36,7 +36,6 @@ class ImageToVideoConverter(
 
   private fun startAction() {
     if (startCall && imageCreateFinish) {
-      //imageToVideoImpl.startEncode()
       try {
         val encoder = VideoEncoder(size, muxer) { listener?.onCompleted() }
         muxer?.prepare()
