@@ -26,8 +26,8 @@ dependencies {
 ## Usage
 ```Kotlin
   imageToVideo = ImageToVideoConverter(
-      outputPath = outputPath,
-      inputImagePath = it,
+      outputPath = outputVideoPath,
+      inputImagePath = inputImagePath,
       size = Size(720, 720),
       duration = TimeUnit.SECONDS.toMicros(4),
       listener = object : EncodeListener {
