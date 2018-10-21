@@ -23,6 +23,34 @@ dependencies {
         implementation 'com.github.MasayukiSuda:ImageToVideoAndroid:v0.0.4'
 }
 ```
+## Usage
+```Kotlin
+  imageToVideo = ImageToVideoConverter(
+      outputPath = outputPath,
+      inputImagePath = it,
+      size = Size(720, 720),
+      duration = TimeUnit.SECONDS.toMicros(4),
+      listener = object : EncodeListener {
+        override fun onProgress(progress: Float) {
+          Log.d("progress", "progress = $progress")
+          runOnUiThread {
+            progressBar.progress = (progress * 100).toInt()
+          }
+        }
+
+        override fun onCompleted() {
+          runOnUiThread {
+            progressBar.progress = 100
+          }
+        }
+	
+        override fun onFailed(exception: Exception) {
+
+        }
+     }
+    )
+  imageToVideo?.start()
+```
 
 
 ## Sample Dependencies
