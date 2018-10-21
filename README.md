@@ -20,7 +20,7 @@ allprojects {
 Step 2. Add the dependency
 ```groovy
 dependencies {
-        implementation 'com.github.MasayukiSuda:ImageToVideoAndroid:v0.0.4'
+        implementation 'com.github.MasayukiSuda:ImageToVideoAndroid:v0.1.0'
 }
 ```
 ## Usage
